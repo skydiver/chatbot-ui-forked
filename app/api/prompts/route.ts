@@ -3,30 +3,30 @@ import { NextResponse } from 'next/server';
 import Prisma from '@/lib/prisma';
 
 export async function GET() {
-  const prompts = await Prisma.prompt.findMany({
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      content: true,
-      model: true,
-      folderId: true,
+  const prompts = await Prisma.storage.findFirst({
+    where: {
+      type: 'prompt',
     },
   });
 
-  return NextResponse.json(prompts);
+  return NextResponse.json(prompts?.content || []);
 }
 
 export async function POST(request: Request) {
   const { prompts } = await request.json();
 
-  for await (const prompt of prompts) {
-    await Prisma.prompt.upsert({
-      where: { id: prompt.id },
-      update: prompt,
-      create: prompt,
-    });
-  }
+  await Prisma.storage.upsert({
+    where: {
+      type: 'prompt',
+    },
+    update: {
+      content: prompts,
+    },
+    create: {
+      type: 'prompt',
+      content: prompts,
+    },
+  });
 
   return NextResponse.json({ status: 'ok' });
 }
