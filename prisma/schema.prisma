@@ -15,4 +15,6 @@ model Storage {
   user    String @unique
   type    String @unique
   content Json
+
+  @@unique(fields: [user, type])
 }

@@ -18,10 +18,12 @@ export async function POST(request: Request) {
 
   await Prisma.storage.upsert({
     where: {
-      type: 'history',
+      user_type: {
+        user: request.headers.get('x-user') as string,
+        type: 'history',
+      },
     },
     update: {
-      user: request.headers.get('x-user') as string,
       content: conversations,
     },
     create: {
