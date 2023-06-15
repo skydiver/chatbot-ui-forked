@@ -3,37 +3,40 @@ import { NextResponse } from 'next/server';
 import Prisma from '@/lib/prisma';
 
 export async function GET() {
-  const conversations = await Prisma.history.findMany({
-    select: {
-      id: true,
-      name: true,
-      messages: true,
-      model: true,
-      prompt: true,
-      temperature: true,
-      folderId: true,
+  const conversations = await Prisma.storage.findFirst({
+    where: {
+      type: 'history',
     },
   });
 
-  return NextResponse.json(conversations);
+  return NextResponse.json(conversations?.content || []);
 }
 
 export async function POST(request: Request) {
   const { conversations } = await request.json();
 
-  for await (const conversation of conversations) {
-    await Prisma.history.upsert({
-      where: { id: conversation.id },
-      update: conversation,
-      create: conversation,
-    });
-  }
+  await Prisma.storage.upsert({
+    where: {
+      type: 'history',
+    },
+    update: {
+      content: conversations,
+    },
+    create: {
+      type: 'history',
+      content: conversations,
+    },
+  });
 
   return NextResponse.json({ status: 'ok' });
 }
 
 export async function DELETE() {
-  await Prisma.history.deleteMany({});
+  await Prisma.storage.delete({
+    where: {
+      type: 'history',
+    },
+  });
 
   return NextResponse.json({ status: 'ok' });
 }
