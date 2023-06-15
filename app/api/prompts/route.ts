@@ -2,37 +2,34 @@ import { NextResponse } from 'next/server';
 
 import Prisma from '@/lib/prisma';
 
-export async function GET() {
-  const prompts = await Prisma.prompt.findMany({
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      content: true,
-      model: true,
-      folderId: true,
+export async function GET(request: Request) {
+  const prompts = await Prisma.storage.findFirst({
+    where: {
+      user: request.headers.get('x-user') as string,
+      type: 'prompt',
     },
   });
 
-  return NextResponse.json(prompts);
+  return NextResponse.json(prompts?.content || []);
 }
 
 export async function POST(request: Request) {
   const { prompts } = await request.json();
 
-  for await (const prompt of prompts) {
-    await Prisma.prompt.upsert({
-      where: { id: prompt.id },
-      update: prompt,
-      create: prompt,
-    });
-  }
-
-  return NextResponse.json({ status: 'ok' });
-}
-
-export async function DELETE() {
-  await Prisma.prompt.deleteMany({});
+  await Prisma.storage.upsert({
+    where: {
+      type: 'prompt',
+    },
+    update: {
+      user: request.headers.get('x-user') as string,
+      content: prompts,
+    },
+    create: {
+      user: request.headers.get('x-user') as string,
+      type: 'prompt',
+      content: prompts,
+    },
+  });
 
   return NextResponse.json({ status: 'ok' });
 }

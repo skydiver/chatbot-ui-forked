@@ -10,30 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model History {
-  idx         String  @id @default(auto()) @map("_id") @db.ObjectId
-  id          String  @unique
-  name        String
-  messages    Json[]
-  model       Json
-  prompt      String
-  temperature Float
-  folderId    String?
-}
-
-model Prompt {
-  idx         String  @id @default(auto()) @map("_id") @db.ObjectId
-  id          String  @unique
-  name        String
-  description String
-  content     String
-  model       Json
-  folderId    String?
-}
-
-model Folder {
-  idx  String @id @default(auto()) @map("_id") @db.ObjectId
-  id   String @unique
-  name String
-  type String
+model Storage {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  user    String @unique
+  type    String @unique
+  content Json
 }
