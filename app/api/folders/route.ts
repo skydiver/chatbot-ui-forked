@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server';
 
 import Prisma from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(request: Request) {
   const folders = await Prisma.storage.findFirst({
     where: {
+      user: request.headers.get('x-user') as string,
       type: 'folder',
     },
   });
@@ -20,9 +21,11 @@ export async function POST(request: Request) {
       type: 'folder',
     },
     update: {
+      user: request.headers.get('x-user') as string,
       content: folders,
     },
     create: {
+      user: request.headers.get('x-user') as string,
       type: 'folder',
       content: folders,
     },

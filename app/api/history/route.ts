@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server';
 
 import Prisma from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(request: Request) {
   const conversations = await Prisma.storage.findFirst({
     where: {
+      user: request.headers.get('x-user') as string,
       type: 'history',
     },
   });
@@ -20,9 +21,11 @@ export async function POST(request: Request) {
       type: 'history',
     },
     update: {
+      user: request.headers.get('x-user') as string,
       content: conversations,
     },
     create: {
+      user: request.headers.get('x-user') as string,
       type: 'history',
       content: conversations,
     },
@@ -31,9 +34,10 @@ export async function POST(request: Request) {
   return NextResponse.json({ status: 'ok' });
 }
 
-export async function DELETE() {
+export async function DELETE(request: Request) {
   await Prisma.storage.delete({
     where: {
+      user: request.headers.get('x-user') as string,
       type: 'history',
     },
   });

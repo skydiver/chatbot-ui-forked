@@ -5,14 +5,18 @@ const [AUTH_USER, AUTH_PASS] = (process.env.HTTP_BASIC_AUTH || ':').split(':');
 
 // Step 1. HTTP Basic Auth Middleware for Challenge
 export function middleware(req: NextRequest) {
-  if (!isAuthenticated(req)) {
+  const auth = isAuthenticated(req);
+
+  if (!auth) {
     return new NextResponse('Authentication required', {
       status: 401,
       headers: { 'WWW-Authenticate': 'Basic' },
     });
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  response.headers.set('x-user', auth);
+  return response;
 }
 
 // Step 2. Check HTTP Basic Auth header if present
@@ -32,7 +36,7 @@ function isAuthenticated(req: NextRequest) {
   const pass = auth[1];
 
   if (user == AUTH_USER && pass == AUTH_PASS) {
-    return true;
+    return user;
   } else {
     return false;
   }
