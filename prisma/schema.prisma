@@ -15,31 +15,3 @@ model Storage {
   type    String @unique
   content Json
 }
-
-model History {
-  idx         String  @id @default(auto()) @map("_id") @db.ObjectId
-  id          String  @unique
-  name        String
-  messages    Json[]
-  model       Json
-  prompt      String
-  temperature Float
-  folderId    String?
-}
-
-model Prompt {
-  idx         String  @id @default(auto()) @map("_id") @db.ObjectId
-  id          String  @unique
-  name        String
-  description String
-  content     String
-  model       Json
-  folderId    String?
-}
-
-model Folder {
-  idx  String @id @default(auto()) @map("_id") @db.ObjectId
-  id   String @unique
-  name String
-  type String
-}
