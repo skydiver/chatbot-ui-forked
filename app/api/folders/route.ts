@@ -3,27 +3,30 @@ import { NextResponse } from 'next/server';
 import Prisma from '@/lib/prisma';
 
 export async function GET() {
-  const folders = await Prisma.folder.findMany({
-    select: {
-      id: true,
-      name: true,
-      type: true,
+  const folders = await Prisma.storage.findFirst({
+    where: {
+      type: 'folder',
     },
   });
 
-  return NextResponse.json(folders);
+  return NextResponse.json(folders?.content || []);
 }
 
 export async function POST(request: Request) {
   const { folders } = await request.json();
 
-  for await (const folder of folders) {
-    await Prisma.folder.upsert({
-      where: { id: folder.id },
-      update: folder,
-      create: folder,
-    });
-  }
+  await Prisma.storage.upsert({
+    where: {
+      type: 'folder',
+    },
+    update: {
+      content: folders,
+    },
+    create: {
+      type: 'folder',
+      content: folders,
+    },
+  });
 
   return NextResponse.json({ status: 'ok' });
 }
