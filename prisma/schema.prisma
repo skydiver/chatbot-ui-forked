@@ -10,6 +10,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Storage {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  type    String @unique
+  content Json
+}
+
 model History {
   idx         String  @id @default(auto()) @map("_id") @db.ObjectId
   id          String  @unique
