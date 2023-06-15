@@ -39,8 +39,10 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   await Prisma.storage.delete({
     where: {
-      user: request.headers.get('x-user') as string,
-      type: 'history',
+      user_type: {
+        user: request.headers.get('x-user') as string,
+        type: 'history',
+      },
     },
   });
 
