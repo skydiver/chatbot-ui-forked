@@ -18,10 +18,12 @@ export async function POST(request: Request) {
 
   await Prisma.storage.upsert({
     where: {
-      type: 'prompt',
+      user_type: {
+        user: request.headers.get('x-user') as string,
+        type: 'prompt',
+      },
     },
     update: {
-      user: request.headers.get('x-user') as string,
       content: prompts,
     },
     create: {

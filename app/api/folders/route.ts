@@ -18,10 +18,12 @@ export async function POST(request: Request) {
 
   await Prisma.storage.upsert({
     where: {
-      type: 'folder',
+      user_type: {
+        user: request.headers.get('x-user') as string,
+        type: 'folder',
+      },
     },
     update: {
-      user: request.headers.get('x-user') as string,
       content: folders,
     },
     create: {
