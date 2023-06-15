@@ -12,8 +12,8 @@ datasource db {
 
 model Storage {
   id      String @id @default(auto()) @map("_id") @db.ObjectId
-  user    String @unique
-  type    String @unique
+  user    String
+  type    String
   content Json
 
   @@unique(fields: [user, type])
